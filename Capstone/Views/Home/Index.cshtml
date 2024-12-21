@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="container my-4">
+    <h2 class="mb-4">Choose a Template</h2>
+    <div class="d-flex flex-row overflow-auto">
+        <a href="/Template/Create" class="card m-2 flex-shrink-0" style="width: 14rem; text-decoration: none; color: inherit;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-plus-circle display-4 text-primary mb-3"></i>
+                <h5 class="card-title">New Template</h5>
+            </div>
+        </a>
+        @foreach (var template in Model)
+        {
+            <a href="/Template/View/@template.TemplateId" class="card m-2 flex-shrink-0" style="width: 14rem; text-decoration: none; color: inherit;">
+                <div class="card-body">
+                    <h5 class="card-title text-truncate" style="max-width: 100%;">@template.Title</h5>
+                    <p class="card-text">
+                        @template.Description
+                    </p>
+                </div>
+            </a>
+        }
+    </div>
+</div>

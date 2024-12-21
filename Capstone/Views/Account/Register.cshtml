@@ -1,0 +1,61 @@
+@model Capstone.ViewModels.Account.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    <link href="~/css/account.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/fonts/material-icon/css/material-design-iconic-font.min.css">
+}
+<section class="signup">
+    <div>
+        <div class="signup-content">
+            <div class="signup-form">
+                <h2 class="form-title">Sign up</h2>
+                <form method="POST" asp-action="Register" class="register-form" id="register-form">
+                    <div class="form-group">
+                        <label for="FirstName"><i class="zmdi zmdi-folder-person"></i></label>
+                        <input type="text" name="FirstName" id="FirstName" placeholder="First name"/>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="LastName"><i class="zmdi zmdi-folder-person"></i></label>
+                        <input type="text" name="LastName" id="LastName" placeholder="Last name"/>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="Email"><i class="zmdi zmdi-email"></i></label>
+                        <input type="Email" name="Email" id="Email" placeholder="Email"/>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password"><i class="zmdi zmdi-lock"></i></label>
+                        <input type="password" name="Password" id="Password" placeholder="Password"/>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="ConfirmPassword"><i class="zmdi zmdi-lock-outline"></i></label>
+                        <input type="password" name="ConfirmPassword" id="ConfirmPassword" placeholder="Repeat password"/>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group form-button">
+                        <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
+                    </div>
+                </form>
+            </div>
+            <div class="signup-image">
+                <figure>
+                    <img src="~/images/register-photo.webp" alt="Register Image" />
+                </figure>
+                <p class="mb-0 signup-image-link">
+                    <a asp-action="Login">I am already member</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

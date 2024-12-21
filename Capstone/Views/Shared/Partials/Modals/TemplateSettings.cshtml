@@ -1,0 +1,51 @@
+@model Capstone.ViewModels.Template.CreateTemplateViewModel
+
+<div class="modal fade" id="templateSettingsModal" tabindex="-1" aria-labelledby="templateSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="templateSettingsModalLabel">Template Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label asp-for="SelectedTagIds" class="form-label">Select Tags</label>
+                    <select id="modal-tags" name="SelectedTagIds" multiple="multiple" class="form-control select2" data-placeholder="-- Select or Add Tags --">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <option value="@tag.TagId">@tag.TagName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="SelectedTagIds" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label asp-for="TopicId" class="form-label">Select Topic</label>
+                        <select asp-for="TopicId" class="form-control select2" data-placeholder="-- Select Topic --">
+                            <option value=""></option>
+                            @foreach (var topic in Model.Topics)
+                            {
+                                <option value="@topic.TopicId">@topic.TopicName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TopicId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label asp-for="IsPublic" class="form-label">Access</label>
+                        <select asp-for="IsPublic" id="templateAccessibility" class="form-control select2" data-placeholder="-- Select accessibility--">
+                            <option value=""></option>
+                            <option value="Public">Public</option>
+                            <option value="Restricted">Restricted</option>
+                        </select>
+                        <span asp-validation-for="IsPublic" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-template-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>

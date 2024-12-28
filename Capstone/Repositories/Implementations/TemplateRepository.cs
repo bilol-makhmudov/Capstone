@@ -14,7 +14,7 @@ public class TemplateRepository(
     public async Task<bool> CreateTemplate(CreateTemplateViewModel createTemplateViewModel, Guid userId)
     {
         string? imageUrl = null;
-        if (createTemplateViewModel.Image.Length > 0)
+        if (createTemplateViewModel.Image?.Length > 0)
         {
             imageUrl = await imageService.UploadImageAsync(createTemplateViewModel.Image);
         }
@@ -37,21 +37,34 @@ public class TemplateRepository(
             });
         }
             
-        foreach (var questionVm in createTemplateViewModel.Questions.OrderBy(q => q.Order))
+        foreach (var questionViewModel in createTemplateViewModel.Questions.OrderBy(q => q.Order))
         {
-            if (questionVm.Image?.Length > 0)
+            string? questionImageUrl = null;
+            if (questionViewModel.QuestionImage?.Length > 0)
             {
-                imageUrl = await imageService.UploadImageAsync(questionVm.Image);
+                questionImageUrl = await imageService.UploadImageAsync(questionViewModel.QuestionImage);
             }
             
             var question = new Question
             {
-                QuestionText = questionVm.QuestionText,
-                Description = questionVm.Description,
-                QuestionType = questionVm.Type,
-                Order = questionVm.Order,
-                ImageUrl = imageUrl,
+                QuestionText = questionViewModel.QuestionText,
+                Description = questionViewModel.Description,
+                QuestionType = questionViewModel.Type,
+                Order = questionViewModel.Order,
+                ShowInResults = questionViewModel.ShowInResults,
+                ImageUrl = questionImageUrl,
             };
+            
+            if (questionViewModel.Type == QuestionType.Checkbox)
+            {
+                foreach (var optionVm in questionViewModel.QuestionOptions)
+                {
+                    question.QuestionOptions.Add(new QuestionOption
+                    {
+                        OptionText = optionVm.OptionText,
+                    });
+                }
+            }
             template.Questions.Add(question);
         }
         

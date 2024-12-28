@@ -19,12 +19,12 @@ public class UserRepository : Repository<ApplicationUser>, IUserRepository
         {
             return [];
         }
-
-        var users = await _context.Users
-            .Where(u 
-                => EF.Functions.ToTsVector("english", u.UserName + " " + u.Email + " " + u.FirstName + " " + u.LastName)
-                .Matches(searchString)).ToListAsync();
         
+        var users = await _context.Users
+            .Where(u => EF.Functions.ILike(u.UserName, $"%{searchString}%") ||
+                        EF.Functions.ILike(u.FirstName, $"%{searchString}%") ||
+                        EF.Functions.ILike(u.LastName, $"%{searchString}%"))
+            .ToListAsync();
         return users;
     }
 }

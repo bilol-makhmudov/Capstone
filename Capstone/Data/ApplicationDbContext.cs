@@ -16,8 +16,9 @@ namespace Capstone.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TemplateTag> TemplateTags { get; set; }
         public DbSet<TemplateUser> TempateUsers { get; set; }
-        public DbSet<Form> Forms { get; set; }
         public DbSet<Answer> Answers { get; set; }
+        public DbSet<QuestionOption> QuestionOptions { get; set; }
+        public DbSet<OptionAnswer> OptionAnswers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -27,9 +28,7 @@ namespace Capstone.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.HasPostgresExtension("uuid-ossp");
-
+            
             modelBuilder.Entity<ApplicationUser>()
                   .Property<NpgsqlTsVector>("SearchVector")
                   .HasColumnType("tsvector") 
@@ -41,11 +40,7 @@ namespace Capstone.Data
             
             modelBuilder.Entity<Topic>(entity =>
             {
-                entity.HasKey(t => t.TopicId);
-                
-                entity.Property(t => t.TopicId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
+                entity.HasKey(t => t.Id);
                 
                 entity.HasIndex(t => t.TopicName)
                       .IsUnique();
@@ -53,10 +48,8 @@ namespace Capstone.Data
             });
             modelBuilder.Entity<Tag>(entity =>
             {
-                entity.HasKey(t => t.TagId);
-                entity.Property(t => t.TagId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
+                entity.HasKey(t => t.Id);
+                
                 entity.HasIndex(t => t.TagName)
                       .HasMethod("GIN")
                       .IsTsVectorExpressionIndex("english");
@@ -64,11 +57,7 @@ namespace Capstone.Data
             
             modelBuilder.Entity<Template>(entity =>
             {
-                entity.HasKey(t => t.TemplateId);
-                
-                entity.Property(t => t.TemplateId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
+                entity.HasKey(t => t.Id);
                 
                 entity.HasOne(t => t.User)
                       .WithMany(u => u.Templates)
@@ -78,25 +67,26 @@ namespace Capstone.Data
             
             modelBuilder.Entity<Question>(entity =>
             {
-                entity.HasKey(q => q.QuestionId);
-                
-                entity.Property(q => q.QuestionId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
+                entity.HasKey(q => q.Id);
                 
                 entity.HasOne(q => q.Template)
                       .WithMany(t => t.Questions)
                       .HasForeignKey(q => q.TemplateId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-            
+
+            modelBuilder.Entity<QuestionOption>(entity =>
+            {
+                  entity.HasKey(q => q.Id);
+                  
+                  entity.HasOne(q => q.Question)
+                        .WithMany(q => q.QuestionOptions)
+                        .HasForeignKey(q => q.QuestionId)
+                        .OnDelete(DeleteBehavior.Cascade);
+            });
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.HasKey(c => c.CommentId);
-                
-                entity.Property(c => c.CommentId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
+                entity.HasKey(c => c.Id);
                 
                 entity.HasOne(c => c.Template)
                       .WithMany(t => t.Comments)
@@ -109,25 +99,24 @@ namespace Capstone.Data
                       .OnDelete(DeleteBehavior.Restrict);
             });
             
+            modelBuilder.Entity<Like>()
+                  .HasIndex(l => new { l.TemplateId, l.UserId })
+                  .IsUnique();
+            
             modelBuilder.Entity<Like>(entity =>
             {
-                entity.HasKey(l => l.LikeId);
-                
-                entity.Property(l => l.LikeId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
-                
-                entity.HasOne(l => l.Template)
+                  
+                  entity.HasIndex(l => new { l.TemplateId, l.UserId })
+                        .IsUnique(); 
+                  entity.HasOne(l => l.Template)
                       .WithMany(t => t.Likes)
                       .HasForeignKey(l => l.TemplateId)
                       .OnDelete(DeleteBehavior.Cascade);
-                
-                entity.HasOne(l => l.User)
+                  entity.HasOne(l => l.User)
                       .WithMany(u => u.Likes)
                       .HasForeignKey(l => l.UserId)
-                      .OnDelete(DeleteBehavior.Restrict);
-                
-                entity.HasIndex(l => new { l.TemplateId, l.UserId })
+                      .OnDelete(DeleteBehavior.Restrict); 
+                  entity.HasIndex(l => new { l.TemplateId, l.UserId })
                       .IsUnique();
                 
             });
@@ -160,43 +149,33 @@ namespace Capstone.Data
                         .OnDelete(DeleteBehavior.Cascade);
             });
             
-            modelBuilder.Entity<Form>(entity =>
-            {
-                entity.HasKey(f => f.FormId);
-
-                entity.Property(f => f.FormId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
-                
-                entity.HasOne(f => f.Template)
-                      .WithMany(t => t.Forms)
-                      .HasForeignKey(f => f.TemplateId)
-                      .OnDelete(DeleteBehavior.Cascade);
-                
-                entity.HasOne(f => f.User)
-                      .WithMany(u => u.Forms)
-                      .HasForeignKey(f => f.UserId)
-                      .OnDelete(DeleteBehavior.Restrict);
-                
-            });
-            
             modelBuilder.Entity<Answer>(entity =>
             {
-                entity.HasKey(a => a.AnswerId);
+                entity.HasKey(a => a.Id);
                 
-                entity.Property(a => a.AnswerId)
-                      .HasDefaultValueSql("uuid_generate_v4()")
-                      .ValueGeneratedOnAdd();
-                
-                entity.HasOne(a => a.Form)
+                entity.HasOne(a => a.Template)
                       .WithMany(f => f.Answers)
-                      .HasForeignKey(a => a.FormId)
+                      .HasForeignKey(a => a.TemplateId)
                       .OnDelete(DeleteBehavior.Cascade);
                 
                 entity.HasOne(a => a.Question)
                       .WithMany(q => q.Answers)
                       .HasForeignKey(a => a.QuestionId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<OptionAnswer>(entity =>
+            {
+                  entity.HasKey(a => a.Id);
+                  entity.HasOne(a => a.Answer)
+                        .WithMany(f => f.OptionAnswers)
+                        .HasForeignKey(a => a.AnswerId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                
+                  entity.HasOne(a => a.QuestionOption)
+                        .WithMany(q => q.OptionAnswers)
+                        .HasForeignKey(a => a.QuestionOptionId)
+                        .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

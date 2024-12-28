@@ -10,10 +10,10 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label asp-for="SelectedTagIds" class="form-label">Select Tags</label>
-                    <select id="modal-tags" name="SelectedTagIds" multiple="multiple" class="form-control select2" data-placeholder="-- Select or Add Tags --">
+                    <select asp-for="SelectedTagIds" id="modal-tags" name="SelectedTagIds" multiple="multiple" class="form-control select2" data-placeholder="-- Select or Add Tags --">
                         @foreach (var tag in Model.Tags)
                         {
-                            <option value="@tag.TagId">@tag.TagName</option>
+                            <option value="@tag.Id">@tag.TagName</option>
                         }
                     </select>
                     <span asp-validation-for="SelectedTagIds" class="text-danger"></span>
@@ -21,26 +21,30 @@
                 <div class="row">
                     <div class="mb-3 col-md-6">
                         <label asp-for="TopicId" class="form-label">Select Topic</label>
-                        <select asp-for="TopicId" class="form-control select2" data-placeholder="-- Select Topic --">
-                            <option value=""></option>
+                        <select id="TemplateTopic" asp-for="TopicId" class="form-control select2" data-placeholder="-- Select Topic --">
+                            <option value="">Select Topic</option>
                             @foreach (var topic in Model.Topics)
                             {
-                                <option value="@topic.TopicId">@topic.TopicName</option>
+                                <option value="@topic.Id">@topic.TopicName</option>
                             }
                         </select>
                         <span asp-validation-for="TopicId" class="text-danger"></span>
                     </div>
                     <div class="mb-3 col-md-6">
                         <label asp-for="IsPublic" class="form-label">Access</label>
-                        <select asp-for="IsPublic" id="templateAccessibility" class="form-control select2" data-placeholder="-- Select accessibility--">
-                            <option value=""></option>
-                            <option value="Public">Public</option>
-                            <option value="Restricted">Restricted</option>
+                        <select asp-for="IsPublic" id="templateAccessibility" class="form-control select2" data-placeholder="-- Select Accessibility --">
+                            <option value="true">Public</option>
+                            <option value="false">Restricted</option>
                         </select>
                         <span asp-validation-for="IsPublic" class="text-danger"></span>
                     </div>
                 </div>
-
+                <div class="form-group" id="templateUserGroup" style="display: none;">
+                    <label asp-for="TemplateUserIds" class="form-label">Select Users</label>
+                    <select id="templateUsers" asp-for="TemplateUserIds" name="TemplateUsers" multiple="multiple" class="form-control select2" data-placeholder="-- Select Users --">
+                    </select>
+                    <span asp-validation-for="TemplateUserIds" class="text-danger"></span>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

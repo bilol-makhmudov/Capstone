@@ -12,7 +12,8 @@
         </a>
         @foreach (var template in Model)
         {
-            <a href="/Template/View/@template.TemplateId" class="card m-2 flex-shrink-0" style="width: 14rem; text-decoration: none; color: inherit;">
+            <a href="@Url.Action("Fill", "Form", new { templateId = template.TemplateId })"
+               class="card m-2 flex-shrink-0" style="width: 14rem; text-decoration: none; color: inherit;">
                 <div class="card-body">
                     <h5 class="card-title text-truncate" style="max-width: 100%;">@template.Title</h5>
                     <p class="card-text">

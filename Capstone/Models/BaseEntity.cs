@@ -2,13 +2,27 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Capstone.Models;
 
-public abstract class BaseEntity
+public interface IBaseEntity
 {
+    Guid Id { get; set; } 
+    DateTime CreatedAt { get; set; }
+    Guid CreatedBy { get; set; }
+    DateTime? UpdatedAt { get; set; }
+    Guid? UpdatedBy { get; set; }
+    bool IsDeleted { get; set; }
+    DateTime? DeletedAt { get; set; }
+    Guid? DeletedBy { get; set; }
+}
+
+public abstract class BaseEntity : IBaseEntity
+{
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
     [Required]
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     [Required]
     public Guid CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     public Guid? UpdatedBy { get; set; }
     [Required]
     public bool IsDeleted { get; set; } = false;

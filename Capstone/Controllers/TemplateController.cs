@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Capstone.Models;
 using Capstone.Repositories.Interfaces;
 using Capstone.ViewModels.Template;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Capstone.Controllers;
@@ -46,8 +48,7 @@ public class TemplateController : Controller
                 ModelState.AddModelError("", "An error occurred while creating the template.");
             }
         }
-        model = await _templateRepository.GetCreateTemplateViewModelAsync(model);
-        return View(model);
+        return View();
     }
     
     public IActionResult Index()

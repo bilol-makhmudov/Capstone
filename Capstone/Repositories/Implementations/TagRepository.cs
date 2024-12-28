@@ -20,9 +20,8 @@ public class TagRepository : Repository<Tag>, ITagRepository
         }
         
         var tags = await _context.Tags
-            .Where(t => EF.Functions.ToTsVector("english", t.TagName)
-                .Matches(searchString))
-                .ToListAsync();
+            .Where(t => EF.Functions.ILike(t.TagName, $"%{searchString}%"))
+            .ToListAsync();
         
         return tags;
     }

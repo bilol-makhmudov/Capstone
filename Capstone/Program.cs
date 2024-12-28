@@ -43,6 +43,12 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<ITemplateUserRepository, TemplateUserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IFormRepository, FormRepository>();
+builder.Services.AddScoped<IQuestionOptionRepository, QuestionOptionRepository>();
+builder.Services.AddScoped<IOptionAnswerRepository, OptionAnswerRepository>();
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

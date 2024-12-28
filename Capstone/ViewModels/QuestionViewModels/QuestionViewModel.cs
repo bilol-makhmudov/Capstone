@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Capstone.Models;
 
-namespace Capstone.ViewModels.Question;
+namespace Capstone.ViewModels.QuestionViewModels;
 
 public class QuestionViewModel
 {
@@ -20,5 +20,6 @@ public class QuestionViewModel
     public bool ShowInResults { get; set; }
 
     public int Order { get; set; }
-    public IFormFile? Image { get; set; }
+    public IFormFile? QuestionImage { get; set; }
+    public ICollection<QuestionOptionViewModel> QuestionOptions { get; set; } = [];
 }

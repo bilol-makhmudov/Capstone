@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Capstone.Models;
 
 public class Question : BaseEntity
@@ -9,6 +11,7 @@ public class Question : BaseEntity
     public int Order { get; set; }
     public string? ImageUrl { get; set; }
     public bool ShowInResults { get; set; } = true;
+    public byte[] RowVersion { get; set; } = Guid.NewGuid().ToByteArray();
 
     public Template Template { get; set; }
     public ICollection<Answer> Answers { get; set; } = new List<Answer>();

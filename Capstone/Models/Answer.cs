@@ -18,7 +18,7 @@ namespace Capstone.Models
 
         [Range(0, int.MaxValue, ErrorMessage = "Numeric response must be a positive number.")]
         public int? NumericResponse { get; set; }
-
+        public byte[] RowVersion { get; set; } = Guid.NewGuid().ToByteArray();
         public Question Question { get; set; }
         public Template Template { get; set; }
 

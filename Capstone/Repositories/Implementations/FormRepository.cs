@@ -2,6 +2,7 @@ using Capstone.Data;
 using Capstone.Models;
 using Capstone.Repositories.Interfaces;
 using Capstone.ViewModels.Form;
+using Capstone.ViewModels.QuestionViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Capstone.Repositories.Implementations;
@@ -35,17 +36,40 @@ public class FormRepository : Repository<Template>, IFormRepository
         {
             return new FormGetViewModel();
         }
+
+        List<QuestionFormFillViewModel> questions = template
+            .Questions
+            .OrderBy(q => q.Order)
+            .Select(q => new QuestionFormFillViewModel
+            {
+                Id = q.Id,
+                QuestionText = q.QuestionText,
+                Description = q.Description,
+                QuestionType = q.QuestionType,
+                QuestionOptions = q.QuestionOptions
+                    .OrderBy(o => o.OptionText)
+                    .Select(o => new QuestionOptionViewModel
+                {
+                    Id = o.Id,
+                    QuestionId = o.QuestionId,
+                    OptionText = o.OptionText,
+                    
+                }).ToList(),
+                Order = q.Order,
+                ImageUrl = q.ImageUrl,
+            }).ToList();
         
-        return new FormGetViewModel
+       var result =  new FormGetViewModel
             {
                 TemplateId = template.Id,
                 Title = template.Title,
                 Description = template.Description,
-                Topic = template.Topic,
+                TopicName = template.Topic?.TopicName,
                 ImageUrl = template.ImageUrl,
-                TemplateTags = template.TemplateTags.ToList(),
-                Questions = template.Questions.OrderBy(q => q.Order).ToList(),
-            };
+                TagNames = template?.TemplateTags?.Select(tt => tt.Tag.TagName).ToList(),
+                Questions = questions
+            };  
+            return result;
     }
 
     public async Task<bool> FormAnswer(FormAnswerViewModel formAnswer, Guid userId)

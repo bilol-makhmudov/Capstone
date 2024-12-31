@@ -1,3 +1,5 @@
+@model Capstone.ViewModels.Form.FormGetViewModel
+
 <form asp-action="Submit" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <input type="hidden" name="TemplateId" value="@Model.TemplateId" />
@@ -21,6 +23,7 @@
                             <div class="card-body">
                                 <h5>@question.QuestionText</h5>
                                 <p class="text-muted">@question.Description</p>
+                                <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id" />
                                 @if (!String.IsNullOrEmpty(question.ImageUrl))
                                 {
                                     <img src="@question.ImageUrl" class="img-fluid mt-2" alt="Preview" />
@@ -45,10 +48,11 @@
                                         foreach (var option in question.QuestionOptions)
                                         {
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       name="Questions[@i].SelectedOptionIds" 
-                                                       value="@option.QuestionOptionId" />
+                                                <input type="checkbox" class="form-check-input"
+                                                       name="Questions[@i].SelectedOptionIds"
+                                                       value="@option.Id"/>
                                                 <label class="form-check-label">@option.OptionText</label>
+                                                <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id" />
                                             </div>
                                         }
                                         break;
@@ -60,14 +64,18 @@
                         </div>
                     }
 
-                    <span class="badge rounded-pill bg-success p-2">@Model.Topic.TopicName</span>
-                    @foreach (var tag in Model.TemplateTags)
+                    <button type="submit" class="btn btn-primary align-self-center">Submit</button>
+                    
+                    @if (!String.IsNullOrWhiteSpace(Model.TopicName))
                     {
-                        <span class="badge rounded-pill bg-secondary p-2">@tag.Tag.TagName</span>
+                        <span class="badge rounded-pill bg-success p-2">@Model.TopicName</span>
+                    }
+                    @foreach (var tag in Model.TagNames)
+                    {
+                        <span class="badge rounded-pill bg-secondary p-2">@tag</span>
                     }
                 </div>
             </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

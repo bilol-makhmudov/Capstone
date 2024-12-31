@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    let newTags = [];
     let imgOnTop = document.getElementById("img-on-top");
     let imgUploadInput = document.getElementById("img-upload");
     let imgUploadIcon = document.getElementById("img-upload-icon");
@@ -69,7 +70,7 @@ $(document).ready(function () {
             },
             processResults: function (data) {
                 return {
-                    results: data.map(tag => ({ id: tag.tagId, text: tag.tagName }))
+                    results: data.map(tag => ({ id: tag.id, text: tag.tagName }))
                 };
             },
             cache: true
@@ -79,15 +80,35 @@ $(document).ready(function () {
             if (term === '') {
                 return null;
             }
-
             return {
                 id: term,
                 text: term,
                 newTag: true
             }
-        }
+        },
     })
 
+    $('#modal-tags').on('select2:select', function (e) {
+        const selectedTag = e.params.data;
+
+        if (selectedTag.newTag) {
+            if (!newTags.includes(selectedTag.text)) {
+                newTags.push(selectedTag.text);
+            }
+        }
+    });
+
+    $('#modal-tags').on('select2:unselect', function (e) {
+        const deselectedTag = e.params.data;
+
+        if (deselectedTag.newTag) {
+            const index = newTags.indexOf(deselectedTag.text);
+            if (index > -1) {
+                newTags.splice(index, 1);
+            }
+        }
+    });
+    
     $("#templateUsers").select2({
         theme: 'bootstrap-5',
         width: '100%',
@@ -118,22 +139,22 @@ $(document).ready(function () {
         switch (questionType) {
             case "SingleLineString":
                 return `
-                    <input type="text" class="form-control" placeholder="Enter a single line of text" maxlength="150" name="Questions[${questionIndex}].SampleAnswer" />
+                    <input disabled type="text" class="form-control" placeholder="Enter a single line of text" maxlength="150" name="Questions[${questionIndex}].SampleAnswer" />
                 `;
             case "MultiLineText":
                 return `
-                    <textarea class="form-control" placeholder="Enter multiple lines of text" rows="3" name="Questions[${questionIndex}].SampleAnswer"></textarea>
+                    <textarea disabled class="form-control" placeholder="Enter multiple lines of text" rows="3" name="Questions[${questionIndex}].SampleAnswer"></textarea>
                 `;
             case "PositiveInteger":
                 return `
-                    <input type="number" class="form-control" placeholder="Enter a positive number" min="0" name="Questions[${questionIndex}].SampleAnswer" />
+                    <input disabled type="number" class="form-control" placeholder="Enter a positive number" min="0" name="Questions[${questionIndex}].SampleAnswer" />
                 `;
             case "Checkbox":
                 return `
                 <div class="options-container" id="options-container-${questionIndex}">
                 </div>
                 <div class="form-check my-2">
-                    <input class="form-check-input" type="checkbox" value="" disabled>
+                    <input disabled class="form-check-input" type="checkbox" value="">
                      <button type="button" class="btn btn-sm btn-primary add-option" data-question-index="${questionIndex}">Add Option</button>
                 </div>
 `;
@@ -212,7 +233,7 @@ $(document).ready(function () {
                 </div>
             </div>
             <img src="" id="img-preview-${questionIndex}" class="img-fluid mt-2 d-none question-image-preview" alt="Preview" />
-            <div id="sample-answer-${questionIndex}" class="form-group mt-3">
+            <div id="sample-answer-${questionIndex}" class="form-group my-3">
                 <p class="text-muted">Select a question type to see the sample answer.</p>
             </div>
             <div class="form-group">
@@ -288,11 +309,7 @@ $(document).ready(function () {
         var selectedUsersText = $('#templateUsers option:selected').map(function() {
             return $(this).text();
         }).get();
-
-        if (!selectedTopicId) {
-            alert('Please select a topic.');
-            return;
-        }
+        
 
         $('input[name="TopicId"]').remove();
         $('input[name="SelectedTagIds"]').remove();
@@ -313,12 +330,33 @@ $(document).ready(function () {
             });
         }
 
+        if (newTags.length > 0) {
+            $.ajax({
+                url: '/Tag/Create',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(newTags),
+                success: function (savedTags) {
+                    newTags = [];
+                },
+                error: function (err) {
+                    alert('Failed to save new tags.');
+                }
+            });
+        }
         $('#templateSettingsModal').modal('hide');
     });
 
     
     $(document).on('click', '.remove-question', function () {
         $(this).closest('.question-form').remove();
+        $(".question-form").each(function (index) {
+            $(this).find('input[name*="Order"]').val(index);
+            $(this).find('.card-title').text(`Question ${index + 1}`);
+        });
     });
 
     $('#create-template-form').on('submit', function (e) {

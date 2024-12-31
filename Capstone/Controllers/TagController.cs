@@ -1,6 +1,8 @@
+using System.Data.Common;
 using Capstone.Models;
 using Capstone.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Capstone.Controllers
 {
@@ -21,19 +23,34 @@ namespace Capstone.Controllers
 
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string tagName)
+        public async Task<IActionResult> Create([FromBody] List<string> tagNames)
         {
-            if (string.IsNullOrWhiteSpace(tagName))
+            if (tagNames == null || tagNames.Count == 0)
             {
-                return BadRequest(new { error = "Tag name cannot be empty." });
+                return BadRequest(new { error = "Tag names cannot be empty." });
             }
-            var newTag = new Tag{TagName = tagName};
-            await _tagRepository.AddAsync(newTag);
-            bool success = await _tagRepository.SaveChangesAsync();
-            if (!success)
+
+            foreach (var tagName in tagNames)
             {
-                return BadRequest(new { error = "Failed to create tag." });
+                if (string.IsNullOrWhiteSpace(tagName)) continue;
+
+                var existingTag = await _tagRepository.FindAsync(t => t.TagName == tagName);
+                if (!existingTag.Any())
+                {
+                    var newTag = new Tag { TagName = tagName };
+                    await _tagRepository.AddAsync(newTag);
+                }
             }
+
+            try
+            {
+                await _tagRepository.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while saving tags.", details = ex.InnerException?.Message });
+            }
+
             return Ok();
         }
     }

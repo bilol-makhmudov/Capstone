@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Capstone.Models;
+using Capstone.ViewModels.QuestionViewModels;
 
 namespace Capstone.ViewModels.Form;
 
@@ -10,7 +11,7 @@ public class FormGetViewModel
     public string Title { get; set; }
     public string Description { get; set; }
     public string? ImageUrl { get; set; }
-    public Topic? Topic { get; set; }
-    public List<TemplateTag> TemplateTags { get; set; } = new List<TemplateTag>();
-    public List<Question> Questions { get; set; } = new List<Question>();
+    public string? TopicName { get; set; }
+    public List<string> TagNames { get; set; } = [];
+    public List<QuestionFormFillViewModel> Questions { get; set; } = new List<QuestionFormFillViewModel>();
 }

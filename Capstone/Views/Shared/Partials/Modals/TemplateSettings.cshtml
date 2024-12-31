@@ -11,10 +11,6 @@
                 <div class="mb-3">
                     <label asp-for="SelectedTagIds" class="form-label">Select Tags</label>
                     <select asp-for="SelectedTagIds" id="modal-tags" name="SelectedTagIds" multiple="multiple" class="form-control select2" data-placeholder="-- Select or Add Tags --">
-                        @foreach (var tag in Model.Tags)
-                        {
-                            <option value="@tag.Id">@tag.TagName</option>
-                        }
                     </select>
                     <span asp-validation-for="SelectedTagIds" class="text-danger"></span>
                 </div>
@@ -23,9 +19,12 @@
                         <label asp-for="TopicId" class="form-label">Select Topic</label>
                         <select id="TemplateTopic" asp-for="TopicId" class="form-control select2" data-placeholder="-- Select Topic --">
                             <option value="">Select Topic</option>
-                            @foreach (var topic in Model.Topics)
+                            @if (Model.Topics != null && Model.Topics.Any())
                             {
-                                <option value="@topic.Id">@topic.TopicName</option>
+                                foreach (var topic in Model.Topics)
+                                {
+                                    <option value="@topic.Id">@topic.TopicName</option>
+                                }
                             }
                         </select>
                         <span asp-validation-for="TopicId" class="text-danger"></span>

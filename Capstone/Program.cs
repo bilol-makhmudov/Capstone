@@ -48,6 +48,7 @@ builder.Services.AddScoped<IFormRepository, FormRepository>();
 builder.Services.AddScoped<IQuestionOptionRepository, QuestionOptionRepository>();
 builder.Services.AddScoped<IOptionAnswerRepository, OptionAnswerRepository>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
 var app = builder.Build();
 

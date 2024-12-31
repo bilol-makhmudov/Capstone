@@ -1,0 +1,55 @@
+@using Newtonsoft.Json
+@model Capstone.ViewModels.Template.EditTemplateViewModel
+
+@{
+    ViewData["Title"] = "Edit Template";
+}
+<script>
+    var model = function () {
+        return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)); }();
+    console.log(model);
+</script>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="edit-template-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="RowVersionBase64" value="@Model.RowVersionBase64" />
+    <div style="background-color: #f0f0f0" class="d-flex justify-content-center">
+        <div style="background-color: #fdfdfd" class="container-sm min-vh-100">
+            <div class="row justify-content-center">
+                <img src="" class="img-fluid mt-3" alt="Image" id="img-on-top">
+                <div class="col-12 col-lg-10 mt-5">
+                    <h2 class="mb-4 text-center" contenteditable="true" id="template-title">@Model.Title</h2>
+                    <input type="hidden" name="Title" id="hidden-template-title"/>
+
+                    <h5 class="mb-4 text-left text-muted" contenteditable="true" id="template-description">@Model.Description</h5>
+                    <input type="hidden" name="Description" id="hidden-template-description"/>
+
+                    <hr/>
+                    <div id="questions-container">
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-3">Update</button>
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-50 translate-middle-y end-0 me-3 d-none d-lg-flex flex-column align-items-center bg-white shadow-sm rounded"
+             style="background-color: #fdfdfd !important;">
+            <button type="button" id="add-question-btn" class="m-1" style="border-radius: 50%;">
+                <i class="bi bi-plus h4"></i>
+            </button>
+            <div class="template-img-top m-1">
+                <label for="img-upload">
+                    <i class="bi bi-file-earmark-image h2" id="img-upload-icon" style="cursor: pointer;"></i>
+                </label>
+                <input asp-for="Image" id="img-upload" type="file"
+                       accept="image/png, image/jpeg, image/heic, image/heif, image/hevc"
+                       class="form-control-file" style="display: none;"/>
+            </div>
+        </div>
+    </div>
+    
+</form>
+
+@section Scripts {
+    <script src="~/js/pages/template-edit.js"></script>
+}

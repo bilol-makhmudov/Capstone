@@ -43,34 +43,38 @@ public class FormController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
+            return View("Fill", refillModel);
         }
-
+        
         var userId = _userManager.GetUserId(User);
         if (userId == null)
         {
             return Unauthorized();
         }
-
+        
         try
         {
             Guid parsedUserId = Guid.Parse(userId);
             var isSaved = await _formRepository.FormAnswer(formAnswer, parsedUserId);
-
+        
             if (isSaved)
             {
-                return RedirectToAction("ThankYou", new { templateId = formAnswer.TemplateId });
+                return RedirectToAction("Index", "Home");
             }
             else
             {
                 ModelState.AddModelError("", "Failed to save the form answers.");
-                return View("Fill", formAnswer);
+                var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
+                return View("Fill", refillModel);
             }
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-            return View("Fill", formAnswer);
+            var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
+            return View("Fill", refillModel);
         }
+        return Ok();
     }
 }

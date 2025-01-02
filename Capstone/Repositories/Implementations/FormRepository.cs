@@ -50,6 +50,50 @@ public class FormRepository : Repository<Template>, IFormRepository
         {
             return new FormGetViewModel();
         }
+        
+        var existingAnswers = await _context.Answers
+            .Where(a => a.TemplateId == templateId && a.UserId == userId)
+            .Include(a => a.OptionAnswers)
+            .ToListAsync();
+
+        if (existingAnswers.Any())
+        {
+            var prefilledQuestions = template.Questions
+                .OrderBy(q => q.Order)
+                .Select(q =>
+                {
+                    var existingAnswer = existingAnswers.FirstOrDefault(a => a.QuestionId == q.Id);
+                    return new QuestionFormFillViewModel
+                    {
+                        Id = q.Id,
+                        QuestionText = q.QuestionText,
+                        Description = q.Description,
+                        QuestionType = q.QuestionType,
+                        QuestionOptions = q.QuestionOptions.Select(o => new QuestionOptionViewModel
+                        {
+                            Id = o.Id,
+                            QuestionId = o.QuestionId,
+                            OptionText = o.OptionText,
+                            IsSelected = existingAnswer?.OptionAnswers.Any(oa => oa.QuestionOptionId == o.Id) ?? false
+                        }).ToList(),
+                        StringResponse = existingAnswer?.StringResponse,
+                        NumericAnswer = existingAnswer?.NumericResponse,
+                        ImageUrl = q.ImageUrl
+                    };
+                }).ToList();
+            
+            return new FormGetViewModel
+            {
+                TemplateId = template.Id,
+                Title = template.Title,
+                Description = template.Description,
+                TopicName = template.Topic?.TopicName,
+                ImageUrl = template.ImageUrl,
+                TagNames = template.TemplateTags.Select(tt => tt.Tag.TagName).ToList(),
+                Questions = prefilledQuestions,
+                IsAlreadyAnswered = true
+            };
+        }
 
         List<QuestionFormFillViewModel> questions = template
             .Questions

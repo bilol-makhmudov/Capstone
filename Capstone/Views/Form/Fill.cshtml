@@ -1,81 +1,95 @@
 @model Capstone.ViewModels.Form.FormGetViewModel
 
+
+
 <form asp-action="Submit" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="TemplateId" value="@Model.TemplateId" />
-    <div style="background-color: #f0f0f0" class="d-flex justify-content-center">
-        <div style="background-color: #fdfdfd" class="container-sm min-vh-100 pb-5">
-            <div class="row justify-content-center">
-                @if (!String.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <img src="@Model.ImageUrl" class="img-fluid mt-3" alt="Image" />
-                }
-
-                <div class="col-12 col-lg-10 mt-5">
-                    <h2 class="mb-4 text-center">@Model.Title</h2>
-                    <h5 class="mb-4 text-left text-muted">@Model.Description</h5>
-                    <hr />
-
-                    @for (int i = 0; i < Model.Questions.Count; i++)
+    @if (Model.IsAlreadyAnswered == true)
+    {
+        <div>
+            <p> You have already answered this form. Answer edit feature will be developed in the coming future</p>
+        </div>
+    }
+    else
+    { 
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="TemplateId" value="@Model.TemplateId"/>
+        <div style="background-color: #f0f0f0" class="d-flex justify-content-center">
+            <div style="background-color: #fdfdfd" class="container-sm min-vh-100 pb-5">
+                <div class="row justify-content-center">
+                    @if (!String.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        var question = Model.Questions[i];
-                        <div class="question-form card mb-3">
-                            <div class="card-body">
-                                <h5>@question.QuestionText</h5>
-                                <p class="text-muted">@question.Description</p>
-                                <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id" />
-                                @if (!String.IsNullOrEmpty(question.ImageUrl))
-                                {
-                                    <img src="@question.ImageUrl" class="img-fluid mt-2" alt="Preview" />
-                                }
+                        <img src="@Model.ImageUrl" class="img-fluid mt-3" alt="Image"/>
+                    }
 
-                                @switch (question.QuestionType)
-                                {
-                                    case QuestionType.SingleLineString:
-                                        <input type="text" class="form-control" name="Questions[@i].StringResponse" placeholder="Enter your answer" />
-                                        break;
-                                    case QuestionType.MultiLineText:
-                                        <textarea class="form-control" 
-                                            name="Questions[@i].StringResponse" rows="3" 
-                                            placeholder="Enter your answer"></textarea>
-                                        break;
-                                    case QuestionType.PositiveInteger:
-                                        <input type="number" class="form-control" 
-                                               name="Questions[@i].NumericAnswer" 
-                                               placeholder="Enter a number" min="0" />
-                                        break;
-                                    case QuestionType.Checkbox:
-                                        foreach (var option in question.QuestionOptions)
-                                        {
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input"
-                                                       name="Questions[@i].SelectedOptionIds"
-                                                       value="@option.Id"/>
-                                                <label class="form-check-label">@option.OptionText</label>
-                                                <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id" />
-                                            </div>
-                                        }
-                                        break;
-                                    default:
-                                        <p class="text-muted">Error loading question type.</p>
-                                        break;
-                                }
+                    <div class="col-12 col-lg-10 mt-5">
+                        <h2 class="mb-4 text-center">@Model.Title</h2>
+                        <h5 class="mb-4 text-left text-muted">@Model.Description</h5>
+                        <hr/>
+
+                        @for (int i = 0; i < Model.Questions.Count; i++)
+                        {
+                            var question = Model.Questions[i];
+                            <div class="question-form card mb-3">
+                                <div class="card-body">
+                                    <h5>@question.QuestionText</h5>
+                                    <p class="text-muted">@question.Description</p>
+                                    <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id"/>
+                                    @if (!String.IsNullOrEmpty(question.ImageUrl))
+                                    {
+                                        <img src="@question.ImageUrl" class="img-fluid mt-2" alt="Preview"/>
+                                    }
+
+                                    @switch (question.QuestionType)
+                                    {
+                                        case QuestionType.SingleLineString:
+                                            <input type="text" class="form-control" name="Questions[@i].StringResponse" placeholder="Enter your answer"/>
+                                            break;
+                                        case QuestionType.MultiLineText:
+                                            <textarea class="form-control" 
+                                                name="Questions[@i].StringResponse" rows="3" 
+                                                placeholder="Enter your answer"></textarea>
+                                            break;
+                                        case QuestionType.PositiveInteger:
+                                            <input type="number" class="form-control"
+                                                   name="Questions[@i].NumericAnswer"
+                                                   placeholder="Enter a number" min="0"/>
+                                            break;
+                                        case QuestionType.Checkbox:
+                                            foreach (var option in question.QuestionOptions)
+                                            {
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input"
+                                                           name="Questions[@i].SelectedOptionIds"
+                                                           value="@option.Id"/>
+                                                    <label class="form-check-label">@option.OptionText</label>
+                                                    <input type="hidden" name="Questions[@i].QuestionId" value="@question.Id"/>
+                                                </div>
+                                            }
+
+                                            break;
+                                        default:
+                                            <p class="text-muted">Error loading question type.</p>
+                                            break;
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
-                    <button type="submit" class="btn btn-primary align-self-center">Submit</button>
-                    
-                    @if (!String.IsNullOrWhiteSpace(Model.TopicName))
-                    {
-                        <span class="badge rounded-pill bg-success p-2">@Model.TopicName</span>
-                    }
-                    @foreach (var tag in Model.TagNames)
-                    {
-                        <span class="badge rounded-pill bg-secondary p-2">@tag</span>
-                    }
+                        <button type="submit" class="btn btn-primary align-self-center">Submit</button>
+
+                        @if (!String.IsNullOrWhiteSpace(Model.TopicName))
+                        {
+                            <span class="badge rounded-pill bg-success p-2">@Model.TopicName</span>
+                        }
+                        @foreach (var tag in Model.TagNames)
+                        {
+                            <span class="badge rounded-pill bg-secondary p-2">@tag</span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    
+ 
 </form>

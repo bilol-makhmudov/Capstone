@@ -13,5 +13,6 @@ public class FormGetViewModel
     public string? ImageUrl { get; set; }
     public string? TopicName { get; set; }
     public List<string> TagNames { get; set; } = [];
+    public bool? IsAlreadyAnswered { get; set; }
     public List<QuestionFormFillViewModel> Questions { get; set; } = new List<QuestionFormFillViewModel>();
 }

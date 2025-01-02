@@ -5,4 +5,5 @@ public class QuestionOptionViewModel
     public Guid Id { get; set; }
     public Guid QuestionId { get; set; }
     public string? OptionText { get; set; }
+    public bool? IsSelected { get; set; }
 }

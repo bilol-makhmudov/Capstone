@@ -19,5 +19,8 @@ public class QuestionFormFillViewModel
     public int Order { get; set; }
     public string? ImageUrl { get; set; }
     
+    public string? StringResponse { get; set; }
+    public int? NumericAnswer { get; set; }
+    
     public ICollection<QuestionOptionViewModel> QuestionOptions { get; set; } = [];
 }

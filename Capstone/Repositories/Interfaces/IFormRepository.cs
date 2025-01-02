@@ -5,6 +5,6 @@ namespace Capstone.Repositories.Interfaces;
 
 public interface IFormRepository : IRepository<Template>
 { 
-    FormGetViewModel GetFormFillViewModel(Guid templateId);
+    Task<FormGetViewModel> GetFormFillViewModel(Guid templateId, Guid userId);
     Task<bool> FormAnswer(FormAnswerViewModel formAnswer, Guid userId);
 }

@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Capstone.Models;
 using Capstone.Repositories.Interfaces;
 using Capstone.ViewModels.Form;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 namespace Capstone.Controllers;
 
 [Route("[controller]")]
@@ -19,16 +19,20 @@ public class FormController : Controller
     }
 
     [HttpGet("{templateId:guid}")]
-    public IActionResult Fill(Guid templateId)
+    public async Task<IActionResult> Fill(Guid templateId)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null) return Unauthorized();
+        
+        if (!Guid.TryParse(userIdClaim.Value, out Guid userId)) return BadRequest("Invalid user ID.");
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-
         try
         {
-            var model = _formRepository.GetFormFillViewModel(templateId);
+            var model = await _formRepository.GetFormFillViewModel(templateId, userId);
             return View(model);
         }
         catch (Exception ex)
@@ -41,40 +45,35 @@ public class FormController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit(FormAnswerViewModel formAnswer)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null) return Unauthorized();
+        
+        if (!Guid.TryParse(userIdClaim.Value, out Guid userId)) return BadRequest("Invalid user ID.");
+        
         if (!ModelState.IsValid)
         {
-            var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
-            return View("Fill", refillModel);
-        }
-        
-        var userId = _userManager.GetUserId(User);
-        if (userId == null)
-        {
-            return Unauthorized();
+            var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId, userId);
+            return View("Fill", await refillModel);
         }
         
         try
         {
-            Guid parsedUserId = Guid.Parse(userId);
-            var isSaved = await _formRepository.FormAnswer(formAnswer, parsedUserId);
+            var isSaved = await _formRepository.FormAnswer(formAnswer, userId);
         
             if (isSaved)
             {
                 return RedirectToAction("Index", "Home");
             }
-            else
-            {
-                ModelState.AddModelError("", "Failed to save the form answers.");
-                var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
-                return View("Fill", refillModel);
-            }
+            
+            ModelState.AddModelError("", "Failed to save the form answers.");
+            var refillModel = await _formRepository.GetFormFillViewModel(formAnswer.TemplateId, userId);
+            return View("Fill", refillModel);
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-            var refillModel = _formRepository.GetFormFillViewModel(formAnswer.TemplateId);
+            var refillModel = await _formRepository.GetFormFillViewModel(formAnswer.TemplateId, userId);
             return View("Fill", refillModel);
         }
-        return Ok();
     }
 }

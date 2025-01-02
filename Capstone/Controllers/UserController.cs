@@ -1,5 +1,6 @@
 using Capstone.Repositories.Interfaces;
 using Capstone.ViewModels.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Capstone.Controllers;
@@ -63,5 +64,14 @@ public class UserController : Controller
             return BadRequest();
         }
         return Ok(await _userRepository.UserDelete(id));
+    }
+    
+    [HttpPost("ToggleRole")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ToggleRole([FromForm] Guid id)
+    {
+        var success = await _userRepository.ToggleUserAdmin(id);
+        if (success) return Ok("Role toggled successfully.");
+        return BadRequest("Failed to toggle user role.");
     }
 }

@@ -34,18 +34,46 @@ $(document).ready(function () {
                 "responsivePriority": 2
             },
             {
+                "data": "role",
+                "render": function(data, type, row) {
+                    if (data === "Admin") {
+                        return '<span class="badge bg-success">Admin</span>';
+                    } else {
+                        return '<span class="badge bg-warning">User</span>';
+                    }
+                },
+                "className": "text-center",
+                "responsivePriority": 2
+            },
+            {
                 "data": null,
                 "orderable": false,
                 "searchable": false,
                 "render": function(data, type, row) {
-                    var lockButton = '';
-                    if (row.isLocked) {
-                        lockButton = '<button class="btn btn-sm btn-success unlock-user me-1" data-id="' + row.id + '">Unlock</button>';
-                    } else {
-                        lockButton = '<button class="btn btn-sm btn-warning lock-user me-1" data-id="' + row.id + '">Lock</button>';
-                    }
-                    var deleteButton = '<button class="btn btn-sm btn-danger delete-user" data-id="' + row.id + '">Delete</button>';
-                    return lockButton + deleteButton;
+                    return `
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="actionMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="actionMenuButton">
+                                <li>
+                                    <button class="dropdown-item lock-user" data-id="${row.id}">
+                                        ${row.isLocked ? 'Unlock User' : 'Lock User'}
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item toggle-role" data-id="${row.id}">
+                                        ${row.role === 'Admin' ? 'Make User' : 'Make Admin'}
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item delete-user" data-id="${row.id}">
+                                        Delete User
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    `;
                 },
                 "className": "text-center",
                 "responsivePriority": 3
@@ -80,8 +108,7 @@ $(document).ready(function () {
     });
 
     var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModel'));
-
-    // Click handler for Lock User - Opens Modal
+    
     $(document).on('click', '.lock-user', function() {
         var userId = $(this).data('id');
         $('#deleteUserId').val(userId);
@@ -91,8 +118,7 @@ $(document).ready(function () {
         $('#confirmationForm button[type="submit"]').removeClass('btn-danger btn-success btn-warning').addClass('btn-warning').text('Lock');
         confirmationModal.show();
     });
-
-    // Click handler for Unlock User - Opens Modal
+    
     $(document).on('click', '.unlock-user', function() {
         var userId = $(this).data('id');
         $('#deleteUserId').val(userId);
@@ -102,8 +128,7 @@ $(document).ready(function () {
         $('#confirmationForm button[type="submit"]').removeClass('btn-danger btn-success btn-warning').addClass('btn-success').text('Unlock');
         confirmationModal.show();
     });
-
-    // Click handler for Delete User - Opens Modal
+    
     $(document).on('click', '.delete-user', function() {
         var userId = $(this).data('id');
         $('#deleteUserId').val(userId);
@@ -114,7 +139,17 @@ $(document).ready(function () {
         confirmationModal.show();
     });
 
-    // Submit handler for Confirmation Form
+
+    $(document).on('click', '.toggle-role', function() {
+        var userId = $(this).data('id');
+        $('#deleteUserId').val(userId);
+        $('#actionType').val('role-toggle');
+        $('#confirmation-question').text('Are you sure you want to change role of this user?');
+        $('#confirmation-title').text('Role change');
+        $('#confirmationForm button[type="submit"]').removeClass('btn-danger btn-success btn-warning').addClass('btn-danger').text('Change');
+        confirmationModal.show();
+    });
+    
     $('#confirmationForm').submit(function(e) {
         e.preventDefault();
         var userId = $('#deleteUserId').val();
@@ -142,12 +177,17 @@ $(document).ready(function () {
                 data: { id: userId }
             };
         }
+        else if(actionType === 'role-toggle') {
+            ajaxOptions = {
+                url: '/User/ToggleRole',
+                type: 'POST',
+                data: { id: userId }
+            }
+        }
 
         $.ajax(ajaxOptions)
             .done(function(response) {
-                // Check if response is a boolean or contains a 'success' property
                 if(response.success === undefined) {
-                    // Assuming response is a boolean
                     if(response){
                         confirmationModal.hide();
                         table.ajax.reload(null, false);

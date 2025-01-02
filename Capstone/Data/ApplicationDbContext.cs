@@ -40,7 +40,7 @@ namespace Capstone.Data
                 entity.HasOne(t => t.User)
                     .WithMany(u => u.Templates)
                     .HasForeignKey(t => t.UserId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Comment>(entity =>
@@ -66,6 +66,9 @@ namespace Capstone.Data
 
             modelBuilder.Entity<Answer>(entity =>
             {
+               entity.HasIndex(a => new { a.TemplateId, a.UserId })
+                    .IsUnique();
+                
                 entity.HasOne(a => a.Question)
                     .WithMany(q => q.Answers)
                     .HasForeignKey(a => a.QuestionId)

@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @model Capstone.ViewModels.Account.LoginViewModel
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = "Login";
@@ -20,18 +22,18 @@
                 <form method="POST" class="register-form" id="login-form" asp-action="Login">
                     <div class="form-group">
                         <label asp-for="Email" for="email"><i class="zmdi zmdi-email"></i></label>
-                        <input type="email" asp-for="Email" name="email" id="email" placeholder="Your Email"/>
+                        <input type="email" asp-for="Email" name="email" id="email" placeholder="@Localizer["YourEmail"]"/>
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Password" for="Password"><i class="zmdi zmdi-lock"></i></label>
-                        <input type="password" asp-for="Password" name="Password" id="Password" placeholder="Password"/>
+                        <input type="password" asp-for="Password" name="Password" id="Password" placeholder="@Localizer["YourPassword"]"/>
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
                     <div class="form-group">
                         <input type="checkbox" asp-for="RememberMe" id="RememberMe" class="agree-term form-check-input" />
                         <label asp-for="RememberMe" class="label-agree-term form-check-label" for="RememberMe">
-                            <span><span></span></span>Remember me
+                            <span><span></span></span>@Localizer["RememberMe"]
                         </label>
                         <span asp-validation-for="RememberMe" class="text-danger small"></span>
                     </div>
@@ -43,7 +45,3 @@
         </div>
     </div>
 </section>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

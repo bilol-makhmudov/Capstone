@@ -210,21 +210,21 @@ $(document).ready(function () {
         var questionForm = `
     <div class="question-form card mb-3" id=questionIndex>
         <div class="card-body">
-            <h5 class="card-title">Question ${questionIndex + 1}</h5>
+            <h5 class="card-title">${localizedStrings.question} ${questionIndex + 1}</h5>
             <div class="row">
                 <div class="form-group col-md-8">
-                    <input placeholder="Question Text" type="text" name="Questions[${questionIndex}].QuestionText" class="form-control" required />
+                    <input placeholder="${localizedStrings.questionText}" type="text" name="Questions[${questionIndex}].QuestionText" class="form-control" required />
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-3 col-sm-6">
                     <select name="Questions[${questionIndex}].Type" class="form-control question-type-select" data-question-index="${questionIndex}" required>
-                        <option value="">Select Question Type</option>
+                        <option value="">${localizedStrings.questionType}</option>
                         <option value="SingleLineString">Single Line String</option>
                         <option value="MultiLineText">Multi Line Text</option>
                         <option value="PositiveInteger">Positive Integer</option>
                         <option value="Checkbox">Checkbox</option>
                     </select>
                 </div>
-                <div class="form-group template-img-top col-md-1">
+                <div class="form-group template-img-top col-md-1 col-sm-6">
                     <label for="img-upload-${questionIndex}">
                         <i class="bi bi-file-earmark-image h2 img-upload-icon" data-question-index="${questionIndex}" style="cursor: pointer;"></i>
                     </label>
@@ -237,11 +237,11 @@ $(document).ready(function () {
                 <p class="text-muted">Select a question type to see the sample answer.</p>
             </div>
             <div class="form-group">
-                <textarea placeholder="Question Description" name="Questions[${questionIndex}].Description" class="form-control"></textarea>
+                <textarea placeholder="${localizedStrings.questionDescription}" name="Questions[${questionIndex}].Description" class="form-control"></textarea>
             </div>
             <div class="form-group form-check">
                 <input type="checkbox" name="Questions[${questionIndex}].ShowInResults" class="form-check-input border border-primary" />
-                <label class="form-check-label">Show in Results</label>
+                <label class="form-check-label">${localizedStrings.showInResults}</label>
             </div>
             <button type="button" class="close remove-question btn btn-sm btn-outline-danger">
                 <i class="bi bi-trash"></i>
@@ -348,6 +348,8 @@ $(document).ready(function () {
             });
         }
         $('#templateSettingsModal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
     });
 
     

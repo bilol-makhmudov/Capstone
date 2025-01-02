@@ -10,4 +10,5 @@ public interface IUserRepository : IRepository<ApplicationUser>
     Task<bool> UserLock(Guid id);
     Task<bool> UserUnLock(Guid id);
     Task<bool> UserDelete(Guid id);
+    Task<bool> ToggleUserAdmin(Guid id);
 }

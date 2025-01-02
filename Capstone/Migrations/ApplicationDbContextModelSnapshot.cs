@@ -50,9 +50,7 @@ namespace Capstone.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
                     b.Property<string>("StringResponse")
@@ -342,9 +340,7 @@ namespace Capstone.Migrations
                         .HasColumnType("integer");
 
                     b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
                     b.Property<bool>("ShowInResults")
@@ -475,9 +471,7 @@ namespace Capstone.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
                     b.Property<string>("Title")
@@ -835,7 +829,7 @@ namespace Capstone.Migrations
                     b.HasOne("Capstone.Models.ApplicationUser", "User")
                         .WithMany("Templates")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Topic");

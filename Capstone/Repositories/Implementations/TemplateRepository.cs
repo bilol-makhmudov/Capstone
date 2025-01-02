@@ -3,6 +3,7 @@ using Capstone.Models;
 using Capstone.Repositories.Interfaces;
 using Capstone.ViewModels.QuestionViewModels;
 using Capstone.ViewModels.Template;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Capstone.Repositories.Implementations;
@@ -14,16 +15,19 @@ public class TemplateRepository : Repository<Template>, ITemplateRepository
     private readonly IImageService _imageService;
     private readonly ITopicRepository _topicRepository;
     private readonly IQuestionRepository _questionRepository;
+    private readonly UserManager<ApplicationUser> _userManager; 
 
     public TemplateRepository(ApplicationDbContext context,
         ITopicRepository topicRepository,
         IImageService imageService,
-        IQuestionRepository questionRepository) : base(context)
+        IQuestionRepository questionRepository,
+        UserManager<ApplicationUser> userManager) : base(context)
     {
         _context = context;
         _imageService = imageService;
         _topicRepository = topicRepository;
         _questionRepository = questionRepository;
+        _userManager = userManager;
     }
 
     public async Task<bool> CreateTemplate(CreateTemplateViewModel createTemplateViewModel, Guid userId)
@@ -40,6 +44,9 @@ public class TemplateRepository : Repository<Template>, ITemplateRepository
             Description = createTemplateViewModel.Description,
             TopicId = createTemplateViewModel.TopicId,
             IsPublic = createTemplateViewModel.IsPublic,
+            TemplateUsers = createTemplateViewModel.TemplateUserIds?.Select(u => new TemplateUser{
+                UserId = u,
+            }).ToList(),
             ImageUrl = imageUrl,
             UserId = userId,
             RowVersion = Guid.NewGuid().ToByteArray()
@@ -82,10 +89,8 @@ public class TemplateRepository : Repository<Template>, ITemplateRepository
                     });
                 }
             }
-
             template.Questions.Add(question);
         }
-
         await AddAsync(template);
         return await SaveChangesAsync();
     }
@@ -102,11 +107,16 @@ public class TemplateRepository : Repository<Template>, ITemplateRepository
 
     public async Task<EditTemplateViewModel> GetTemplateForEditAsync(Guid templateId, Guid userId)
     {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return await Task.FromResult<EditTemplateViewModel>(null);
+        
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+        
         var template = await _context.Templates
             .Include(t => t.Questions)
             .ThenInclude(q => q.QuestionOptions)
             .Include(t => t.TemplateTags).ThenInclude(tt => tt.Tag)
-            .FirstOrDefaultAsync(t => t.Id == templateId && t.UserId == userId);
+            .FirstOrDefaultAsync(t => t.Id == templateId && (isAdmin || t.UserId == userId));
 
         if (template == null)
         {
@@ -122,7 +132,11 @@ public class TemplateRepository : Repository<Template>, ITemplateRepository
             IsPublic = template.IsPublic,
             SelectedTagIds = template?.TemplateTags?.Select(tt => tt.TagId).ToList(),
             ImageUrl = template?.ImageUrl,
-            Tags = template?.TemplateTags?.Select(tt => tt.Tag).ToList(),
+            Tags = template?.TemplateTags?.Select(tt => new Tag
+            {
+                Id = tt.Tag.Id,
+                TagName = tt.Tag.TagName
+            }).ToList(),
             RowVersionBase64 = Convert.ToBase64String(template.RowVersion),
             Questions = template?.Questions?.Select(q => new QuestionViewModel
             {

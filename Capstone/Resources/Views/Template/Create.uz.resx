@@ -1,0 +1,53 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CreateTemplate" xml:space="preserve">
+        <value>Shablonni Yaratish</value>
+    </data>
+    <data name="Description" xml:space="preserve">
+        <value> Tavsif shu yerga yoziladi</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Sarlavha bu yerga yoziladi</value>
+    </data>
+    <data name="Question" xml:space="preserve">
+        <value>Savol</value>
+    </data>
+    <data name="QuestionDescription" xml:space="preserve">
+        <value>Savol tavsifi</value>
+    </data>
+    <data name="QuestionText" xml:space="preserve">
+        <value>Savol matni</value>
+    </data>
+    <data name="QuestionType" xml:space="preserve">
+        <value>Savol turini tanlang</value>
+    </data>
+    <data name="ShowInResults" xml:space="preserve">
+        <value>Qidiruvlarda ko'rsatish</value>
+    </data>
+    <data name="public" xml:space="preserve">
+        <value>Ommaviy</value>
+    </data>
+    <data name="Access" xml:space="preserve">
+        <value>Ko'rish uchun ruxsat</value>
+    </data>
+    <data name="restricted" xml:space="preserve">
+        <value>Cheklangan</value>
+    </data>
+    <data name="SelectTag" xml:space="preserve">
+        <value>Teg tanlang</value>
+    </data>
+    <data name="SelectTopic" xml:space="preserve">
+        <value>Mavzuni tanlang</value>
+    </data>
+</root>

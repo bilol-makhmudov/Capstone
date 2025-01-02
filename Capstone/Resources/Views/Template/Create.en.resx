@@ -1,0 +1,53 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CreateTemplate" xml:space="preserve">
+        <value>Create Template</value>
+    </data>
+    <data name="Description" xml:space="preserve">
+        <value> Description goes here</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Title goes here</value>
+    </data>
+    <data name="Question" xml:space="preserve">
+        <value>Question</value>
+    </data>
+    <data name="QuestionDescription" xml:space="preserve">
+        <value>Question Description</value>
+    </data>
+    <data name="QuestionText" xml:space="preserve">
+        <value>Question Text</value>
+    </data>
+    <data name="QuestionType" xml:space="preserve">
+        <value>Select question type</value>
+    </data>
+    <data name="ShowInResults" xml:space="preserve">
+        <value>Show in results</value>
+    </data>
+    <data name="Access" xml:space="preserve">
+        <value>Access</value>
+    </data>
+    <data name="public" xml:space="preserve">
+        <value>Public</value>
+    </data>
+    <data name="restricted" xml:space="preserve">
+        <value>Restricted</value>
+    </data>
+    <data name="SelectTag" xml:space="preserve">
+        <value>Select Tag</value>
+    </data>
+    <data name="SelectTopic" xml:space="preserve">
+        <value>Select Topic</value>
+    </data>
+</root>

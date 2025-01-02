@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @model Capstone.ViewModels.Template.CreateTemplateViewModel
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = "Create Template";
@@ -12,10 +14,10 @@
             <div class="row justify-content-center">
                 <img src="" class="img-fluid mt-3" alt="Image" id="img-on-top">
                 <div class="col-12 col-lg-10 mt-5">
-                    <h2 class="mb-4 text-center" contenteditable="true" id="template-title">Title goes here</h2>
+                    <h2 class="mb-4 text-center" contenteditable="true" id="template-title">@Localizer["Title"]</h2>
                     <input type="hidden" name="Title" id="hidden-template-title" />
 
-                    <h5 class="mb-4 text-left text-muted" contenteditable="true" id="template-description">Description goes here</h5>
+                    <h5 class="mb-4 text-left text-muted" contenteditable="true" id="template-description">@Localizer["Description"]</h5>
                     <input type="hidden" name="Description" id="hidden-template-description" />
 
                     <hr/>
@@ -23,33 +25,46 @@
                     <div id="questions-container">
                     </div>
                     
-                    <button type="submit" class="btn btn-success mt-3">Create Template</button>
+                    <button type="submit" class="btn btn-success mt-3">@Localizer["CreateTemplate"]</button>
                 </div>
             </div>
         </div>
         
-        <div class="position-fixed top-50 translate-middle-y end-0 me-3 d-none d-lg-flex flex-column align-items-center bg-white shadow-sm rounded"
-             style="background-color: #fdfdfd !important;">
-            <button type="button" id="add-question-btn" class="m-1" style="border-radius: 50%;">
-                <i class="bi bi-plus h4"></i>
+        @* <div class="position-fixed top-50 translate-middle-y end-0 me-3 d-none d-lg-flex flex-column align-items-center bg-white shadow-sm rounded" *@
+        @*      style="background-color: #fdfdfd !important; z-index: 1030;"> *@
+        <div class="position-fixed top-50 translate-middle-y end-0 p-3 d-flex flex-column align-items-center gap-2 bg-white shadow-sm rounded"
+             style="z-index: 1030;">
+            <button type="button" id="add-question-btn" class="btn btn-primary btn-circle">
+                <i class="bi bi-plus"></i>
             </button>
             <div class="template-img-top m-1">
-                <label for="img-upload">
-                    <i class="bi bi-file-earmark-image h2" id="img-upload-icon" style="cursor: pointer;"></i>
+                <label for="img-upload" class="btn btn-secondary btn-circle">
+                    <i class="bi bi-file-earmark-image" id="img-upload-icon" style="cursor: pointer;"></i>
                 </label>
                 <input asp-for="Image" id="img-upload" type="file"
                        accept="image/png, image/jpeg, image/heic, image/heif, image/hevc"
                        class="form-control-file" style="display: none;"/>
             </div>
             
-            <button type="button" data-bs-toggle="modal" data-bs-target="#templateSettingsModal" aria-labelledby="templateSettingsLabel" aria-hidden="true" id="template-settings-btn" class="m-1" style="border-radius: 50%;" title="Template Settings">
-                <i class="bi bi-star h4"></i>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#templateSettingsModal" 
+                    aria-labelledby="templateSettingsLabel" aria-hidden="true" id="template-settings-btn" class="btn btn-warning btn-circle" 
+                    style="border-radius: 50%;" title="Template Settings">
+                <i class="bi bi-star"></i>
             </button>
         </div>
     </div>
 </form>
 
 @section Scripts {
+    <script>
+        const localizedStrings = {
+            question: "@Localizer["Question"]",
+            questionText: "@Localizer["QuestionText"]",
+            questionType: "@Localizer["QuestionType"]",
+            questionDescription: "@Localizer["QuestionDescription"]",
+            showInResults: "@Localizer["ShowInResults"]",
+        };
+    </script>
     <script src="~/js/pages/template-create.js"></script>
 }
 

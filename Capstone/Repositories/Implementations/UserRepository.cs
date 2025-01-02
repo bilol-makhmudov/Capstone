@@ -39,16 +39,25 @@ public class UserRepository : Repository<ApplicationUser>, IUserRepository
             .Users.Where(u => u.IsDeleted != true)
             .ToListAsync();
 
-        List<UserViewModel> userViewModels = users.Select(u => new UserViewModel
+        List<UserViewModel> userViewModels = new List<UserViewModel>();
+
+        foreach (var user in users)
         {
-            Id = u.Id,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            Email = u.Email,
-            IsLocked = u.LockoutEnabled 
-                       && u.LockoutEnd.HasValue 
-                       && u.LockoutEnd.Value > DateTimeOffset.UtcNow
-        }).ToList();
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.Contains("Admin") ? "Admin" : roles.FirstOrDefault() ?? "User";
+            
+            userViewModels.Add(new UserViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email ?? "",
+                IsLocked = user.LockoutEnabled 
+                           && user.LockoutEnd.HasValue 
+                           && user.LockoutEnd.Value > DateTimeOffset.UtcNow,
+                Role = userRole
+            });
+        }
         
         return userViewModels;
     }
@@ -92,18 +101,43 @@ public class UserRepository : Repository<ApplicationUser>, IUserRepository
         try
         {        
             var user = await _context.Users.FindAsync(id);
+            
+            
             if (user == null)
                 return false;
-            
-            user.IsDeleted = true;
-            user.DeletedAt = DateTime.UtcNow;
-            _context.Users.Update(user);
-            
-            return await _context.SaveChangesAsync() > 0;
+            await _userManager.DeleteAsync(user);
+            return true;
         }
         catch (Exception ex)
         {
             return false;
         }
+    }
+    
+    public async Task<bool> ToggleUserAdmin(Guid id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (user == null) return false;
+            
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+        if (isAdmin)
+        {
+            var removeAdminResult = await _userManager.RemoveFromRoleAsync(user, "Admin");
+            if (!removeAdminResult.Succeeded) return false;
+
+            var addUserResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!addUserResult.Succeeded) return false;
+        }
+        else
+        {
+            var removeUserResult = await _userManager.RemoveFromRoleAsync(user, "User");
+            if (!removeUserResult.Succeeded) return false;
+
+            var addAdminResult = await _userManager.AddToRoleAsync(user, "Admin");
+            if (!addAdminResult.Succeeded) return false;
+        }
+            
+        return true;
     }
 }
